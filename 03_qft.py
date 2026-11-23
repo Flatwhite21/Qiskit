@@ -20,3 +20,4 @@ qc_qft = qft(n_qubits)
 print(qc_qft.draw('text'))
 print(f'Глубина схемы: {qc_qft.depth()}')
 print(f'Количество вентилей: {qc_qft.size()}')
+

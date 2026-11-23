@@ -1,7 +1,9 @@
+# run_all.py — квантовый симулятор на базе Qiskit
 from qiskit import QuantumCircuit, transpile
 from qiskit_aer import AerSimulator, StatevectorSimulator
 import numpy as np
 
+# ── 1. Bell State ────────────────────────────────────────────
 def bell_circuit():
     qc = QuantumCircuit(2, 2)
     qc.h(0)
@@ -9,6 +11,7 @@ def bell_circuit():
     qc.measure([0, 1], [0, 1])
     return qc
 
+# ── 2. Deutsch–Jozsa ─────────────────────────────────────────
 def dj_oracle(n, balanced):
     oracle = QuantumCircuit(n + 1)
     if balanced:
@@ -28,6 +31,7 @@ def deutsch_jozsa(n, balanced):
     qc.measure(range(n), range(n))
     return qc
 
+# ── 3. QFT ───────────────────────────────────────────────────
 def qft(n):
     qc = QuantumCircuit(n)
     for j in range(n):
@@ -38,6 +42,7 @@ def qft(n):
         qc.swap(i, n - i - 1)
     return qc
 
+# ── Запуск ───────────────────────────────────────────────────
 SHOTS = 1024
 sim = AerSimulator()
 sv  = StatevectorSimulator()
@@ -48,7 +53,7 @@ print('Bell State:', counts_bell)
 counts_dj = sim.run(transpile(deutsch_jozsa(3, True), sim), shots=SHOTS).result().get_counts()
 print('Deutsch-Jozsa (balanced):', counts_dj)
 
-statevec = sv.run(transpile(qft(3), sv)).result().get_statevector()
+statevec = np.asarray(sv.run(transpile(qft(3), sv)).result().get_statevector())
 print('QFT amplitudes:')
 for i, amp in enumerate(statevec):
-    print(f'  |{i:03b}: {amp:.4f}')
+    print(f'  |{i:03b}⟩: {amp:.4f}')
